@@ -36,8 +36,6 @@ class Identification(object):
         
         
         PMID=[]
-        #PMID.append('123')
-        #PMID.append('345')
         for_inter= node.findall('./xs:orcid-profile/xs:orcid-activities/xs:orcid-works/xs:orcid-work/xs:work-external-identifiers/xs:work-external-identifier/xs:work-external-identifier-type',xml_ns)
         for_id = node.findall('./xs:orcid-profile/xs:orcid-activities/xs:orcid-works/xs:orcid-work/xs:work-external-identifiers/xs:work-external-identifier/xs:work-external-identifier-id',xml_ns)
         temp_pmid=[]
@@ -76,10 +74,6 @@ class Identification(object):
     def __unicode__(self):
         return unicode(self.some_field) or u''
 
-def select_files_in_folder(dir, ext):
-    for file in os.listdir(dir):
-        if file.endswith('.%s' % ext):
-            yield os.path.join(dir, file)
 
 def main():
     indir = sys.argv[1]
@@ -87,15 +81,8 @@ def main():
 
     try:
         for file in os.listdir(indir):
-    
-
-            #for file in select_files_in_folder(sys.argv[1], 'xml'):
-                #process_xml_file(file)
-
-            #xmlFile = sys.argv[1]
             xmlFile = file
-            #outdir = sys.argv[2]
-            f = open(xmlFile, 'rb')
+            f = open(indir+'/'+xmlFile, 'rb')
             unzipedInFile = os.path.basename(xmlFile)
             outfile = os.path.join(outdir,unzipedInFile+".ttl")
             fout=open(outfile,"w")
@@ -107,7 +94,6 @@ def main():
             log("Parsing xml {}".format(time.clock()-start))
             
             start= time.clock()
-            #for names in root.findall('.//family-name'):
             cr = Identification()
             try:
                 cr.parse(root)
