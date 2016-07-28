@@ -69,8 +69,9 @@ class Identification(object):
 
             if self.pmid:
                 for x in range (0,len(self.pmid)):
-                    g.add((self.getURI(),NS["PMID"], Literal(self.pmid[x])))
-                    g.add((self.getURI(),RDF.type,NST["PMID"]))
+                    g.add((self.getURI(),NS["PMIDID"], Literal(self.pmid[x])))
+                    g.add((self.getURI(),NS["PMIDLINK"], PML(self.pmid[x])))
+                    #g.add((self.getURI(),RDF.type,NST["PMID"]))
             
     def __unicode__(self):
         return unicode(self.some_field) or u''
@@ -81,48 +82,51 @@ def select_files_in_folder(dir, ext):
             yield os.path.join(dir, file)
 
 def main():
+    indir = sys.argv[1]
+    outdir = sys.argv[2]
 
     try:
+        for file in os.listdir(indir):
     
 
-        #for file in select_files_in_folder(sys.argv[1], 'xml'):
-            #process_xml_file(file)
+            #for file in select_files_in_folder(sys.argv[1], 'xml'):
+                #process_xml_file(file)
 
-        xmlFile = sys.argv[1]
-        #xmlFile = file
-        outdir = sys.argv[2]
-        f = open(xmlFile, 'rb')
-        unzipedInFile = os.path.basename(xmlFile)
-        outfile = os.path.join(outdir,unzipedInFile+".ttl")
-        fout=open(outfile,"w")
-        g = Graph(fout)
-        log("Parsing file: {} ".format(xmlFile))
-        start= time.clock()
-        outdir = ET.parse(f)
-        root = outdir.getroot()
-        log("Parsing xml {}".format(time.clock()-start))
-        
-        start= time.clock()
-        #for names in root.findall('.//family-name'):
-        cr = Identification()
-        try:
-            cr.parse(root)
+            #xmlFile = sys.argv[1]
+            xmlFile = file
+            #outdir = sys.argv[2]
+            f = open(xmlFile, 'rb')
+            unzipedInFile = os.path.basename(xmlFile)
+            outfile = os.path.join(outdir,unzipedInFile+".ttl")
+            fout=open(outfile,"w")
+            g = Graph(fout)
+            log("Parsing file: {} ".format(xmlFile))
+            start= time.clock()
+            outdir = ET.parse(f)
+            root = outdir.getroot()
+            log("Parsing xml {}".format(time.clock()-start))
+            
+            start= time.clock()
+            #for names in root.findall('.//family-name'):
+            cr = Identification()
             try:
-                cr.write_ttl(g)
+                cr.parse(root)
+                try:
+                    cr.write_ttl(g)
+                except:
+                    error("writing {}: {}".format(cr.ORCiDID, traceback.format_exc()))
             except:
-                error("writing {}: {}".format(cr.ORCiDID, traceback.format_exc()))
-        except:
-            error("parsing {}: {}".format(cr.ORCiDID, traceback.format_exc()))
-        stop = time.clock()
-        log("Reading records {}".format(stop-start))
-        
-        g.serialize()
-        log("Writing {}".format(time.clock()-stop))
+                error("parsing {}: {}".format(cr.ORCiDID, traceback.format_exc()))
+            stop = time.clock()
+            log("Reading records {}".format(stop-start))
+            
+            g.serialize()
+            log("Writing {}".format(time.clock()-stop))
     except:
         #print "File: "+unzipedInFile
         print traceback.format_exc()
 
 if __name__ == "__main__":
-    for file in select_files_in_folder(sys.argv[1], 'xml'):
+    #for file in select_files_in_folder(sys.argv[1], 'xml'):
     main()
 
