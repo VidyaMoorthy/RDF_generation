@@ -59,8 +59,8 @@ class Identification(object):
         self.pmid= PMID
 
     def write_ttl(self, g):
-        print self.ORCiDID
-        print self.pmid
+        #print self.ORCiDID
+        #print self.pmid
         if self.ORCiDID:
             g.add((self.getURI(), NS["Name"], Literal(self.personName)))
             g.add((self.getURI(),RDF.type,NST["ORCiDPerson"]))
@@ -89,8 +89,8 @@ def main():
             g = Graph(fout)
             log("Parsing file: {} ".format(xmlFile))
             start= time.clock()
-            outdir = ET.parse(f)
-            root = outdir.getroot()
+            xmlFile = ET.parse(f)
+            root = xmlFile.getroot()
             log("Parsing xml {}".format(time.clock()-start))
             
             start= time.clock()
