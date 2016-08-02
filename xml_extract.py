@@ -16,6 +16,9 @@ NST = Namespace("http://ns.ontoforce.com/ontologies/person/classes/")
 PML= Namespace("http://identifiers.org/pubmed/")
 SCP = Namespace("https://www.scopus.com/authid/detail.uri?authorId=")
 RSD= Namespace("http://www.researcherid.com/rid/")
+DOI = Namespace("http://doi.org/")
+Ref= Namespace("http://purl.org/spar/biro/")
+PMC = Namespace("http://www.ncbi.nlm.nih.gov/pmc/?term=")
 class Identification(object):
     def __init__(self):
         self.ORCiDID = None
@@ -27,6 +30,8 @@ class Identification(object):
         self.scopus = None
         self.ResearcherID= None
         self.publications=None
+        self.firstName= None
+        self.familyName= None
         
 
     def getURI(self):
@@ -34,16 +39,17 @@ class Identification(object):
 
     def parse(self, node):
         self.ORCiDID = node.find('./xs:orcid-profile/xs:orcid-identifier/xs:path',xml_ns).text
-        firstName = node.find('./xs:orcid-profile/xs:orcid-bio/xs:personal-details/xs:given-names', xml_ns).text.encode('utf-8')
-        familyName = node.find('./xs:orcid-profile/xs:orcid-bio/xs:personal-details/xs:family-name', xml_ns).text.encode('utf-8')
-        self.personName = firstName + "  " +familyName
+        self.firstName = node.find('./xs:orcid-profile/xs:orcid-bio/xs:personal-details/xs:given-names', xml_ns).text.encode('utf-8')
+        self.familyName = node.find('./xs:orcid-profile/xs:orcid-bio/xs:personal-details/xs:family-name', xml_ns).text.encode('utf-8')
+        self.personName = self.firstName + "  " +self.familyName
 
         alia=[]
         aliases = node.findall('./xs:orcid-profile/xs:orcid-bio/xs:personal-details/xs:other-names/xs:other-name', xml_ns)
         if (aliases != None):
             for alias in aliases:
                 alia.append(alias.text)
-            self.otherName= alia
+            self.otherName= alia 
+                    
 
         peopleIndtifier= node.findall('./xs:orcid-profile/xs:orcid-bio/xs:researcher-urls/xs:researcher-url/xs:url-name', xml_ns)
         peoplIdenValue= node.findall('./xs:orcid-profile/xs:orcid-bio/xs:researcher-urls/xs:researcher-url/xs:url', xml_ns)
@@ -65,6 +71,8 @@ class Identification(object):
                     self.twitter = type_identiValue[iterId]
                 if (type_identifier[iterId]== "Scopus Author ID"):
                     self.scopus = type_identiValue[iterId]
+                if(type_identifier[iterId]== "ResearcherID"):
+                    self.ResearcherID = type_identiValue[iterId]
         
         PeopleIdentity=node.findall('./xs:orcid-profile/xs:orcid-bio/xs:external-identifiers/xs:external-identifier/xs:external-id-common-name', xml_ns)
         PeopleIDValue=node.findall('./xs:orcid-profile/xs:orcid-bio/xs:external-identifiers/xs:external-identifier/xs:external-id-reference', xml_ns)
@@ -97,6 +105,10 @@ class Identification(object):
         if self.ORCiDID:
             g.add((self.getURI(), NS["Name"], Literal(self.personName)))
             g.add((self.getURI(),RDF.type,NST["ORCiDPerson"]))
+            if self.firstName:
+                g.add((self.getURI(), NS["firstName"], Literal(self.firstName)))
+            if self.familyName:
+                g.add((self.getURI(), NS["familyName"], Literal(self.familyName)))
 
             if self.otherName:
                 for othernames in range(0,len(self.otherName)):
@@ -117,12 +129,14 @@ class Identification(object):
                 for pub in self.publications:
                     pmid = pub.pmid
                     if pmid:
-                        g.add((self.getURI(), NS["PMIDID"], Literal(pmid)))
-                        g.add((self.getURI(),NS["PMIDLINK"], PML[pmid]))
+                        g.add((self.getURI(),NS["isAuthorOf"],PML[pmid]))
             
                         if pub.doi:
                             doi=pub.doi
-                            g.add((PML[pmid],NS["PMIDhasDOI"], Literal(doi)))
+                            g.add((PML[pmid],Ref["references"], DOI[doi]))
+                        if pub.pmc:
+                            pmc = pub.pmc
+                            g.add((PML[pmid],Ref["PMCreference"], PMC[pmc]))
                
             
     def __unicode__(self):
@@ -133,6 +147,7 @@ class Publications(object):
     def __init__(self,node=None):
         self.pmid=None
         self.doi= None
+        self.pmc= None
         if node:
             self.parse(node)
 
@@ -144,11 +159,13 @@ class Publications(object):
             if idfiers:
         
                     for xem in idfiers:
-                        type_tmp = xem.find('./xs:work-external-identifier-type',xml_ns).text
+                        type_tmp = xem.find('./xs:work-external-identifier-type',xml_ns).text.encode('utf-8')
                         if type_tmp == 'doi':
-                            self.doi = xem.find('./xs:work-external-identifier-id',xml_ns).text
+                            self.doi = xem.find('./xs:work-external-identifier-id',xml_ns).text.encode('utf-8')
+                        if type_tmp == 'pmc':
+                            self.pmc = xem.find('./xs:work-external-identifier-id',xml_ns).text.encode('utf-8')
                         if type_tmp == 'pmid':
-                            self.pmid = xem.find('./xs:work-external-identifier-id',xml_ns).text 
+                            self.pmid = xem.find('./xs:work-external-identifier-id',xml_ns).text
 
 
         
