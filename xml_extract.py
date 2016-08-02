@@ -36,6 +36,7 @@ class Identification(object):
 
     def getURI(self):
         return URIRef("http://identifiers.org/orcid/"+self.ORCiDID)
+    
 
     def parse(self, node):
         self.ORCiDID = node.find('./xs:orcid-profile/xs:orcid-identifier/xs:path',xml_ns).text
@@ -47,9 +48,20 @@ class Identification(object):
         aliases = node.findall('./xs:orcid-profile/xs:orcid-bio/xs:personal-details/xs:other-names/xs:other-name', xml_ns)
         if (aliases != None):
             for alias in aliases:
-                alia.append(alias.text)
+                txtalia= alias.text.encode('utf-8')
+                if "or" in txtalia:
+                    orsplit = txtalia.split("or")
+                    for i in orsplit:
+                        alia.append(i)
+                elif "," in txtalia:
+                    andsplit = txtalia.split(",")
+                    for j in andsplit:
+                        alia.append(j)
+                else:
+                     alia.append(txtalia)
+                #print alia
             self.otherName= alia 
-                    
+         
 
         peopleIndtifier= node.findall('./xs:orcid-profile/xs:orcid-bio/xs:researcher-urls/xs:researcher-url/xs:url-name', xml_ns)
         peoplIdenValue= node.findall('./xs:orcid-profile/xs:orcid-bio/xs:researcher-urls/xs:researcher-url/xs:url', xml_ns)
