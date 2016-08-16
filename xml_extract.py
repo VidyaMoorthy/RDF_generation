@@ -7,6 +7,7 @@ import urllib
 import re
 import pprint
 import time
+import rdflib
 from rdfwriter import Graph, Literal, Namespace, RDF, URIRef
 from log import *
 
@@ -160,9 +161,10 @@ class Publications(object):
         self.pmid=None
         self.doi= None
         self.pmc= None
+        #
         if node:
             self.parse(node)
-
+            #self.comparePMID()
     def parse(self,node):
 
         temp_type= node.find('./xs:work-external-identifiers',xml_ns)
@@ -180,6 +182,21 @@ class Publications(object):
                             self.pmid = xem.find('./xs:work-external-identifier-id',xml_ns).text
 
 
+def comparePMID():
+    subject=[]
+    predicate= []
+    objects= []
+    gOnto = rdflib.Graph()
+    result = gOnto.parse('Vidya_Va.ttl', format='n3')
+    print len(gOnto)
+    for s,p,o in gOnto:
+        subject.append(s)
+        predicate.append(p)
+        objects.append(o)
+    
+
+comparePMID()
+    
         
 
 def select_files_in_folder(dir, ext):
