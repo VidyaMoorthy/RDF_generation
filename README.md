@@ -11,3 +11,13 @@ The text file has:
 4) Last name
 5) Other name
 
+
+## testDB
+
+This file reads the text file and builds the datbase of orcid profile.
+database name: ORCIDPROFILE
+schema: ORCIDschema
+Table: orcidprofile
+columns: pmid,orcidid,firstname,lastname,othername
+Composite primary key : pmid, orcidid
+
