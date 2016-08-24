@@ -7,7 +7,7 @@ import sys
 def main():
 
 	try:
-		con = psycopg2.connect("dbname='ORCIDPROFILE' user='postgres' host='localhost' password='vidbha@nov14'")
+		con = psycopg2.connect("dbname='ORCIDPROFILE' user='postgres' host='localhost' password='password'")
 	except:
 		print "I am unable to connect to the database"
 
@@ -19,21 +19,11 @@ def main():
 			#pmid ,orcidId, first_name, last_name,other_name = re.findall("\[(.*?)\]", eachline)
 			pmid ,orcidId, first_name, last_name,other_name = eachline.split("\t")
 
-
-			#pmidint = [[int(y) for y in x] for x in pmid]
-			#print pmidint
-			
-			#x= int(pmid)
-			#print (pmid)
-			#print (orcidId)
-			#print first_name
-			#print (other_name)
-			#sys.exit()
 			cur.execute("INSERT INTO orcidprofileTrail (pmid, orcidid,firstname,lastname,othername) VALUES (%s,%s,%s,%s,%s)", (pmid,orcidId,first_name, last_name,other_name ))
 			#cur.execute("INSERT INTO orcidprofileTrail VALUES (pmid,orcidId,first_name, last_name,other_name )")
 			con.commit()
 			sys.exit
 
-			#insertData(pmid ,orcidId, first_name, last_name)
+			
 main()
 
