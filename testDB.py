@@ -12,7 +12,7 @@ def main():
 		print "I am unable to connect to the database"
 
 	cur = con.cursor()
-	cur.execute("CREATE TABLE orcidprofileTrail (pmid integer , orcidid serial PRIMARY KEY, firstname varchar,lastname varchar, othername varchar);")
+	cur.execute("CREATE TABLE orcidprofileTrail (pmid integer , orcidid varchar, firstname varchar,lastname varchar, othername varchar);")
 	with open('/home/vidya/Desktop/OntoForce/data/utils/old/trail.text') as f:
 		content = f.readlines()
 		for eachline in content:
