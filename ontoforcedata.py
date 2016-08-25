@@ -76,9 +76,9 @@ class Identification(object):
 
 	def write_tab(self, output):
 
-		print self.first_name[:10]
+		#print self.first_name[:10]
 		#print self.family_name[:10]
-		print self.pmid[:10]
+		#print self.pmid[:10]
 
 
 		for wrting in range (0,len(self.pmid)):
@@ -98,13 +98,10 @@ def main():
 	outdir = '/home/vidya/Desktop/OntoForce/data/utils/old/ontoforcedata.text'
 
 	try:
-		#for file in os.listdir(indir):
+	
 		xmlFile = indir
 		f= open(xmlFile, 'rb')
-		#unzipedInFile = os.path.basename(xmlFile)
-		#outfile = os.path.join(outdir,unzipedInFile+".text")
-		fout=open(outdir,'w')
-		#g = Graph(fout)
+		fout=open(outdir,'a')
 		log("Parsing file: {} ".format(xmlFile))
 		start= time.clock()
 		xmlFile = ET.parse(f)
@@ -123,8 +120,7 @@ def main():
 			error("parsing {}: {}".format(cr.pmid, traceback.format_exc()))
 		stop = time.clock()
 		log("Reading records {}".format(stop-start))
-		
-		#g.serialize()
+	
 		log("Writing {}".format(time.clock()-stop))
 	except:
 		print traceback.format_exc()
