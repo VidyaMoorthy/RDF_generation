@@ -16,13 +16,13 @@ from log import *
 class Identification(object):
 	def __init__(self):
 		
-		self.article_title = None
-		self.pmid= None
-		self.first_name= None
-		self.family_name= None
-		self.initial = None
-		self.journal = None
-		self.language =None
+		self.article_title = []
+		self.pmid= []
+		self.first_name= []
+		self.family_name= []
+		self.initial = []
+		self.journal = []
+		self.language =[]
 		
 
 
@@ -39,13 +39,17 @@ class Identification(object):
 
 			for article in each.findall('Article'):
 				self.article_title.append(article.find('ArticleTitle').text.encode('utf-8')) # this gets the article title 
+
+
 				self.language.append(article.find('Language').text.encode('utf-8')) # this gets the language of the article
 
 				for authors in article.findall('AuthorList'):
+
 					for each_author in authors.findall('Author'):
 						last_name = each_author.find('LastName')
-						print last_name.text.encode('utf-8')
-						if last_name :
+						#print last_name.text.encode('utf-8')
+						if last_name is not None:
+							#print last_name.text.encode('utf-8')
 							self.family_name.append(last_name.text.encode('utf-8'))
 							#print self.family_name
 							#print last_name.text.encode('utf-8')
@@ -53,13 +57,14 @@ class Identification(object):
 							self.family_name.append("")
 
 						first= each_author.find('ForeName')
-						print first.text.encode('utf-8')
-						if first:
+						#print first.text.encode('utf-8')
+						if first is not None:
+							#print first.text.encode('utf-8')
 							self.first_name.append(first.text.encode('utf-8'))
 						else:
 							self.first_name.append("")
 						ini= each_author.find('Initials')
-						if ini:
+						if ini is not None:
 							self.initial.append(ini.text.encode('utf-8'))
 						else:
 							self.initial.append("")	
@@ -67,11 +72,11 @@ class Identification(object):
 			
 				for journ in article.findall('Journal'):
 					journal_title=  journ.find('Title') # this gets the journal title
-					if journal_title:
-			 			self.journal.append(journal_title.text.encode('utf-8'))
-		 			else:
-		 				self.journal.append("")
-		#print all_first[:30]
+					#if journal_title:
+		 			self.journal.append(journal_title.text.encode('utf-8'))
+		 			#else:
+		 			#	self.journal.append("")
+		print self.first_name[:30]
 
 
 	def write_tab(self, output):
@@ -98,10 +103,13 @@ def main():
 	outdir = '/home/vidya/Desktop/OntoForce/data/utils/old/ontoforcedata.text'
 
 	try:
-	
+		#for file in os.listdir(indir):
 		xmlFile = indir
 		f= open(xmlFile, 'rb')
-		fout=open(outdir,'a')
+		#unzipedInFile = os.path.basename(xmlFile)
+		#outfile = os.path.join(outdir,unzipedInFile+".text")
+		fout=open(outdir,'w')
+		#g = Graph(fout)
 		log("Parsing file: {} ".format(xmlFile))
 		start= time.clock()
 		xmlFile = ET.parse(f)
@@ -120,7 +128,8 @@ def main():
 			error("parsing {}: {}".format(cr.pmid, traceback.format_exc()))
 		stop = time.clock()
 		log("Reading records {}".format(stop-start))
-	
+		
+		#g.serialize()
 		log("Writing {}".format(time.clock()-stop))
 	except:
 		print traceback.format_exc()
