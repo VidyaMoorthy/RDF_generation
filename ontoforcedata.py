@@ -30,20 +30,15 @@ class Identification(object):
 		#f = "/home/vidya/Desktop/OntoForce/data/utils/old/medline16n0650.xml"
 		#xmlFile = ET.parse(f)
 		#root = xmlFile.getroot()
-		all_pmid = []
-		all_article = []
-		all_language = []
-		all_last = []
-		all_first = []
-		all_initial = []
+		
 		
 		for each  in node.findall('MedlineCitation'):
-			all_pmid.append(each.find('PMID').text.encode('utf-8'))  # this gets the pmid
+			self.pmid.append(each.find('PMID').text.encode('utf-8'))  # this gets the pmid
 
 
 
 			for article in each.findall('Article'):
-				all_article.append(article.find('ArticleTitle').text.encode('utf-8')) # this gets the article title 
+				self.article_title.append(article.find('ArticleTitle').text.encode('utf-8')) # this gets the article title 
 				self.language.append(article.find('Language').text.encode('utf-8')) # this gets the language of the article
 
 				for authors in article.findall('AuthorList'):
@@ -51,23 +46,23 @@ class Identification(object):
 						last_name = each_author.find('LastName')
 						print last_name.text.encode('utf-8')
 						if last_name :
-							all_last.append(last_name.text.encode('utf-8'))
+							self.family_name.append(last_name.text.encode('utf-8'))
 							#print self.family_name
 							#print last_name.text.encode('utf-8')
 						else:
-							all_last.append("")
+							self.family_name.append("")
 
 						first= each_author.find('ForeName')
 						print first.text.encode('utf-8')
 						if first:
-							all_first.append(first.text.encode('utf-8'))
+							self.first_name.append(first.text.encode('utf-8'))
 						else:
-							all_first.append("")
+							self.first_name.append("")
 						ini= each_author.find('Initials')
 						if ini:
-							all_initial.append(ini.text.encode('utf-8'))
+							self.initial.append(ini.text.encode('utf-8'))
 						else:
-							all_initial.append("")	
+							self.initial.append("")	
 				
 			
 				for journ in article.findall('Journal'):
@@ -76,7 +71,7 @@ class Identification(object):
 			 			self.journal.append(journal_title.text.encode('utf-8'))
 		 			else:
 		 				self.journal.append("")
-		print all_first[:30]
+		#print all_first[:30]
 
 
 	def write_tab(self, output):
